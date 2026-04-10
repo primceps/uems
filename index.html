@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>U-EMS v11 | 대전중앙시장 제3주차장</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════ */
+:root{
+  --c-bg:#F4F6F9;
+  --c-surface:#FFFFFF;
+  --c-surface2:#F8FAFC;
+  --c-border:#E2E8F0;
+  --c-border2:#CBD5E1;
+  --c-text:#1E293B;
+  --c-text2:#475569;
+  --c-text3:#94A3B8;
+  --c-primary:#0F62FE;
+  --c-primary-h:#0043CE;
+  --c-primary-s:#EBF2FF;
+  --c-green:#16803C;
+  --c-green-s:#DCFCE7;
+  --c-yellow:#B45309;
+  --c-yellow-s:#FEF3C7;
+  --c-orange:#C2410C;
+  --c-orange-s:#FFEDD5;
+  --c-red:#DC2626;
+  --c-red-s:#FEE2E2;
+  --c-purple:#7C3AED;
+  --c-purple-s:#EDE9FE;
+  --c-teal:#0D7490;
+  --c-teal-s:#E0F2FE;
+  --r:8px;--r-lg:12px;--r-xl:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
+  --nav-h:56px;
+  --side-w:220px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--c-bg);color:var(--c-text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;font-size:14px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column;}
+
+/* ═══════════════════════════════════════════
+   TOP BAR
+═══════════════════════════════════════════ */
+.topbar{height:var(--nav-h);background:var(--c-primary);display:flex;align-items:center;padding:0 20px;gap:16px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-md);}
+.topbar-logo{display:flex;align-items:center;gap:10px;color:#fff;font-size:15px;font-weight:700;text-decoration:none;white-space:nowrap;}
+.topbar-logo-badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;letter-spacing:.5px;}
+.topbar-site{flex:1;font-size:12px;color:rgba(255,255,255,.75);padding-left:20px;border-left:1px solid rgba(255,255,255,.2);}
+.topbar-site strong{color:#fff;display:block;font-size:13px;}
+.topbar-right{display:flex;align-items:center;gap:12px;margin-left:auto;}
+.live-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 10px;font-size:11px;color:#fff;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#4ADE80;animation:livePulse 1.5s infinite;}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.topbar-clock{font-size:12px;color:rgba(255,255,255,.85);background:rgba(0,0,0,.15);padding:4px 10px;border-radius:6px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.topbar-user{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;}
+.topbar-notif{position:relative;cursor:pointer;}
+.topbar-notif-icon{font-size:18px;color:rgba(255,255,255,.8);}
+.notif-badge{position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:#EF4444;border:1.5px solid var(--c-primary);font-size:8px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.layout{display:flex;flex:1;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:var(--side-w);background:var(--c-surface);border-right:1px solid var(--c-border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;}
+.sidebar-section{padding:16px 12px 8px;font-size:10px;font-weight:700;color:var(--c-text3);letter-spacing:1px;text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:var(--r);margin:1px 8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--c-text2);transition:all .15s;position:relative;}
+.nav-item:hover{background:var(--c-primary-s);color:var(--c-primary);}
+.nav-item.active{background:var(--c-primary-s);color:var(--c-primary);font-weight:700;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--c-primary);border-radius:0 2px 2px 0;left:-8px;}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--c-red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;}
+.sidebar-bottom{margin-top:auto;padding:12px;border-top:1px solid var(--c-border);}
+.sidebar-version{font-size:10px;color:var(--c-text3);text-align:center;padding:4px;}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:20px;}
+.page{display:none;}
+.page.active{display:block;}
+
+/* ═══════════════════════════════════════════
+   COMMON COMPONENTS
+═══════════════════════════════════════════ */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.page-title{font-size:20px;font-weight:700;color:var(--c-text);}
+.page-desc{font-size:12px;color:var(--c-text3);margin-top:2px;}
+.page-actions{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.kpi{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:16px 18px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:14px;}
+.kpi-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.kpi-body{flex:1;min-width:0;}
+.kpi-label{font-size:11px;font-weight:600;color:var(--c-text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.kpi-value{font-size:22px;font-weight:700;line-height:1.1;}
+.kpi-sub{font-size:11px;color:var(--c-text3);margin-top:3px;}
+.kpi-trend{font-size:10px;font-weight:600;margin-top:4px;}
+.kpi-trend.up{color:var(--c-green);}
+.kpi-trend.down{color:var(--c-red);}
+.kpi-trend.neu{color:var(--c-text3);}
+
+/* CARDS */
+.card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow);}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.card-title{font-size:13px;font-weight:700;color:var(--c-text);display:flex;align-items:center;gap:7px;}
+.card-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;background:var(--c-primary-s);color:var(--c-primary);}
+.chart-box{position:relative;}
+
+/* GRID LAYOUTS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px;}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:14px;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.bg-green{background:var(--c-green-s);color:var(--c-green);}
+.bg-blue{background:var(--c-primary-s);color:var(--c-primary);}
+.bg-yellow{background:var(--c-yellow-s);color:var(--c-yellow);}
+.bg-orange{background:var(--c-orange-s);color:var(--c-orange);}
+.bg-red{background:var(--c-red-s);color:var(--c-red);}
+.bg-purple{background:var(--c-purple-s);color:var(--c-purple);}
+.bg-teal{background:var(--c-teal-s);color:var(--c-teal);}
+.bg-gray{background:var(--c-border);color:var(--c-text2);}
+
+/* STATUS DOT */
+.sdot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.sdot.green{background:var(--c-green);}
+.sdot.yellow{background:#EAB308;}
+.sdot.red{background:var(--c-red);}
+.sdot.gray{background:var(--c-text3);}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{background:var(--c-surface2);color:var(--c-text3);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;text-align:left;border-bottom:2px solid var(--c-border);}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--c-border);color:var(--c-text);vertical-align:middle;}
+.tbl tr:last-child td{border:none;}
+.tbl tr:hover td{background:var(--c-surface2);}
+.tbl-num{text-align:right;font-variant-numeric:tabular-nums;}
+
+/* PROGRESS BAR */
+.pbar{height:6px;background:var(--c-border);border-radius:3px;overflow:hidden;}
+.pbar-fill{height:100%;border-radius:3px;transition:width .6s;}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--c-border);margin:14px 0;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--r);border:1.5px solid var(--c-border2);background:var(--c-surface);color:var(--c-text2);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.btn:hover{border-color:var(--c-primary);color:var(--c-primary);background:var(--c-primary-s);}
+.btn-primary{background:var(--c-primary);color:#fff;border-color:var(--c-primary);}
+.btn-primary:hover{background:var(--c-primary-h);border-color:var(--c-primary-h);color:#fff;}
+.btn-success{background:var(--c-green);color:#fff;border-color:var(--c-green);}
+.btn-run{background:linear-gradient(135deg,var(--c-primary),var(--c-purple));color:#fff;border:none;padding:10px 24px;font-size:13px;font-weight:700;border-radius:var(--r);}
+.btn-run:hover{filter:brightness(1.1);}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg{display:flex;flex-direction:column;gap:3px;}
+.fl{font-size:11px;font-weight:600;color:var(--c-text2);}
+.fi{background:var(--c-surface);border:1.5px solid var(--c-border);border-radius:var(--r);padding:8px 10px;color:var(--c-text);font-size:13px;outline:none;transition:all .15s;width:100%;}
+.fi:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(15,98,254,.1);}
+.fi.auto{border-color:var(--c-green);background:#F0FFF4;}
+select.fi option{background:#fff;}
+.fhint{font-size:10px;color:var(--c-text3);}
+.autotag{font-size:9px;font-weight:700;color:var(--c-green);background:var(--c-green-s);padding:1px 5px;border-radius:4px;margin-left:4px;}
+.fsec{margin-bottom:18px;}
+.fsec-title{font-size:13px;font-weight:700;color:var(--c-text);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+
+/* SUBTABS */
+.stabs{display:flex;border-bottom:2px solid var(--c-border);margin-bottom:18px;gap:0;}
+.stab{padding:8px 18px;font-size:13px;font-weight:500;color:var(--c-text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;}
+.stab:hover{color:var(--c-text);}
+.stab.active{color:var(--c-primary);border-bottom-color:var(--c-primary);font-weight:700;}
+.spage{display:none;}
+.spage.active{display:block;}
+
+/* STEPS */
+.steps{display:flex;align-items:center;margin-bottom:20px;}
+.step{display:flex;align-items:center;gap:6px;}
+.step-n{width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-n.todo{border:2px solid var(--c-border2);color:var(--c-text3);}
+.step-n.active{background:var(--c-primary);color:#fff;box-shadow:0 0 0 3px rgba(15,98,254,.2);}
+.step-n.done{background:var(--c-green);color:#fff;}
+.step-lbl{font-size:11px;font-weight:600;color:var(--c-text3);}
+.step-lbl.active{color:var(--c-text);}
+.step-sep{flex:1;height:1.5px;background:var(--c-border);margin:0 8px;}
+.step-sep.done{background:var(--c-green);}
+
+/* ADDR SEARCH BOX */
+.addr-box{background:#fff;border:2px solid var(--c-primary);border-radius:var(--r-xl);padding:20px;margin-bottom:18px;box-shadow:var(--shadow-md);position:relative;overflow:hidden;}
+.addr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--c-primary),var(--c-purple),var(--c-green));}
+.addr-label{font-size:13px;font-weight:700;color:var(--c-primary);margin-bottom:2px;}
+.addr-sub{font-size:11px;color:var(--c-text3);margin-bottom:14px;}
+.addr-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.addr-input{flex:1;min-width:200px;background:#fff;border:1.5px solid var(--c-border2);border-radius:var(--r);padding:10px 12px;font-size:13px;color:var(--c-text);outline:none;transition:all .15s;}
+.addr-input:focus{border-color:var(--c-primary);box-shadow:0 0 0 3px rgba(15,98,254,.1);}
+.addr-input::placeholder{color:var(--c-text3);}
+.btn-search{background:var(--c-primary);color:#fff;border:none;border-radius:var(--r);padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;}
+.btn-search:hover{background:var(--c-primary-h);}
+.btn-search:disabled{background:var(--c-text3);cursor:not-allowed;}
+
+/* API CHIPS */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.chip{display:flex;align-items:center;gap:5px;background:var(--c-surface2);border:1px solid var(--c-border);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:600;color:var(--c-text2);}
+.chip-dot{width:6px;height:6px;border-radius:50%;}
+.chip-dot.idle{background:var(--c-text3);}
+.chip-dot.loading{background:#EAB308;animation:livePulse 1s infinite;}
+.chip-dot.ok{background:var(--c-green);}
+.chip-dot.err{background:var(--c-red);}
+
+/* WEATHER PANEL */
+.wx-panel{background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--r-lg);padding:16px;margin-top:14px;display:none;}
+.wx-panel.show{display:block;}
+.wx-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:8px;}
+.wx-loc{font-size:13px;font-weight:700;}
+.wx-meta{font-size:10px;color:var(--c-text3);margin-top:2px;}
+.wx-src{font-size:10px;background:#fff;border:1px solid var(--c-border);border-radius:6px;padding:3px 8px;color:var(--c-text3);}
+.wx-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
+.wx-item{background:#fff;border:1px solid var(--c-border);border-radius:var(--r);padding:10px 6px;text-align:center;}
+.wx-item.hl{border-color:#EAB308;background:#FFFBEB;}
+.wx-icon{font-size:18px;margin-bottom:3px;}
+.wx-val{font-size:13px;font-weight:700;color:var(--c-text);}
+.wx-item.hl .wx-val{color:var(--c-yellow);}
+.wx-name{font-size:9px;color:var(--c-text3);margin-top:1px;}
+.mini-map{background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--r);height:64px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:var(--c-text3);margin-top:10px;}
+
+/* LOADING */
+.loader-wrap{display:none;flex-direction:column;align-items:center;padding:48px 0;gap:14px;}
+.loader-wrap.show{display:flex;}
+.loader{width:36px;height:36px;border:3px solid var(--c-border);border-top-color:var(--c-primary);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-txt{font-size:13px;color:var(--c-text2);}
+.pbar-track{width:220px;height:5px;background:var(--c-border);border-radius:3px;overflow:hidden;}
+.pbar-run{height:100%;background:linear-gradient(90deg,var(--c-primary),var(--c-green));border-radius:3px;width:0;transition:width .3s;}
+.spin-sm{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+.spin-sm.show{display:inline-block;}
+
+/* RESULT SUMMARY ROW */
+.res-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.res-item{background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--r);padding:14px;text-align:center;}
+.res-val{font-size:20px;font-weight:700;margin-bottom:2px;}
+.res-lbl{font-size:10px;color:var(--c-text3);}
+.res-green .res-val{color:var(--c-green);}
+.res-blue .res-val{color:var(--c-primary);}
+.res-yellow .res-val{color:var(--c-yellow);}
+.res-orange .res-val{color:var(--c-orange);}
+
+/* SCENARIO CARDS */
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.sc-card{background:#fff;border:1.5px solid var(--c-border);border-radius:var(--r-lg);padding:14px;position:relative;}
+.sc-card.rec{border-color:var(--c-green);box-shadow:0 0 0 3px var(--c-green-s);}
+.sc-rec-tag{position:absolute;top:-9px;right:12px;background:var(--c-green);color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:8px;}
+.sc-name{font-size:13px;font-weight:700;margin-bottom:8px;}
+.sc-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid var(--c-border);}
+.sc-row:last-child{border:none;}
+.sc-k{color:var(--c-text3);}
+.sc-v{font-weight:600;}
+
+/* REPORT */
+.rpt-sec{background:#fff;border:1px solid var(--c-border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow);}
+.rpt-sec-hd{background:var(--c-primary);padding:10px 18px;font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+.rpt-sec-body{padding:16px 18px;}
+.rpt-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.rpt-info-row{display:flex;padding:7px 0;border-bottom:1px solid var(--c-surface2);}
+.rpt-info-row:last-child{border:none;}
+.rpt-ik{font-size:11px;color:var(--c-text3);font-weight:600;min-width:110px;flex-shrink:0;}
+.rpt-iv{font-size:12px;font-weight:500;}
+.rpt-kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:0;}
+.rpt-kpi{background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--r);padding:12px;}
+.rpt-kpi-val{font-size:18px;font-weight:700;margin-bottom:1px;}
+.rpt-kpi-lbl{font-size:10px;color:var(--c-text3);}
+.rpt-kpi-sub{font-size:10px;color:var(--c-text2);margin-top:2px;}
+.rpt-kpi.g .rpt-kpi-val{color:var(--c-green);}
+.rpt-kpi.b .rpt-kpi-val{color:var(--c-primary);}
+.rpt-kpi.y .rpt-kpi-val{color:var(--c-yellow);}
+.rpt-kpi.o .rpt-kpi-val{color:var(--c-orange);}
+.rpt-kpi.p .rpt-kpi-val{color:var(--c-purple);}
+.flow-row{display:flex;flex-direction:column;gap:0;}
+.flow-li{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--c-surface2);font-size:12px;}
+.flow-li:last-child{border:none;}
+.event-tag{display:inline-block;padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;}
+.et-peak{background:#FEE2E2;color:#991B1B;}
+.et-dr{background:#FFEDD5;color:#9A3412;}
+.et-solar{background:#DCFCE7;color:#166534;}
+.et-ev{background:#DBEAFE;color:#1E40AF;}
+.peak-stat{display:flex;justify-content:space-between;font-size:11px;padding:6px 0;border-bottom:1px solid var(--c-surface2);}
+.peak-stat:last-child{border:none;}
+.ps-k{color:var(--c-text3);}
+.ps-v{font-weight:700;}
+.opinion-box{background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--r);padding:14px;}
+.opinion-item{display:flex;gap:8px;margin-bottom:8px;font-size:12px;color:var(--c-text2);line-height:1.7;}
+.opinion-item:last-child{margin:0;}
+.oi-icon{flex-shrink:0;font-size:14px;}
+
+/* ENERGY FLOW DIAGRAM */
+.eflow{display:flex;align-items:center;justify-content:center;gap:0;padding:12px 0;}
+.enode{background:var(--c-surface2);border:1.5px solid var(--c-border2);border-radius:10px;padding:12px 14px;text-align:center;min-width:108px;}
+.enode-icon{font-size:22px;margin-bottom:4px;}
+.enode-name{font-size:11px;font-weight:700;color:var(--c-text);}
+.enode-val{font-size:11px;color:var(--c-text3);margin-top:2px;}
+.enode.solar{border-color:#EAB308;background:#FFFBEB;}
+.enode.grid{border-color:var(--c-primary);background:var(--c-primary-s);}
+.enode.ev{border-color:var(--c-green);background:var(--c-green-s);}
+.earrow{display:flex;flex-direction:column;align-items:center;padding:0 4px;}
+.earrow-line{border-top:1.5px dashed var(--c-border2);width:44px;position:relative;}
+.earrow-line::after{content:'▶';position:absolute;right:-7px;top:-9px;font-size:10px;color:var(--c-border2);}
+.earrow-lbl{font-size:9px;color:var(--c-text3);margin-top:3px;}
+
+/* GAUGE */
+.gauge{margin-bottom:9px;}
+.gauge-hd{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.gauge-name{color:var(--c-text2);}
+.gauge-val{font-weight:700;color:var(--c-text);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1.5px solid var(--c-green);color:var(--c-green);padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;box-shadow:var(--shadow-lg);}
+.toast.show{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="topbar">
+  <a class="topbar-logo" href="#">
+    <span style="font-size:22px">⚡</span>
+    U-EMS
+    <span class="topbar-logo-badge">v11</span>
+  </a>
+  <div class="topbar-site">
+    <strong>대전중앙시장 제3주차장</strong>
+    대전광역시 동구 중앙로 210 · 태양광 50kWp · EV충전 4기
+  </div>
+  <div class="topbar-right">
+    <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+    <div class="topbar-clock" id="clock">-</div>
+    <div class="topbar-notif">
+      <span class="topbar-notif-icon">🔔</span>
+      <span class="notif-badge">2</span>
+    </div>
+    <div class="topbar-user">관</div>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<nav class="sidebar">
+  <div class="sidebar-section">모니터링</div>
+  <div class="nav-item active" onclick="nav('overview',this)"><span class="nav-icon">📊</span>실시간 현황</div>
+  <div class="nav-item" onclick="nav('ev',this)"><span class="nav-icon">🔌</span>EV 충전 관리</div>
+
+  <div class="sidebar-section" style="margin-top:8px">분석 도구</div>
+  <div class="nav-item" onclick="nav('solar',this)"><span class="nav-icon">☀</span>태양광 예측 모델</div>
+  <div class="nav-item" onclick="nav('economics',this)"><span class="nav-icon">💹</span>경제성 분석</div>
+
+  <div class="sidebar-section" style="margin-top:8px">보고</div>
+  <div class="nav-item" onclick="nav('report',this)"><span class="nav-icon">📋</span>운영 보고서</div>
+
+  <div class="sidebar-section" style="margin-top:8px">설정</div>
+  <div class="nav-item" onclick="nav('settings',this)"><span class="nav-icon">⚙</span>시스템 설정</div>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-version">U-EMS v11.0.0 · 2026.04</div>
+    <div class="sidebar-version" style="color:var(--c-green)">● 정상 운영 중</div>
+  </div>
+</nav>
+
+<!-- ═══════ CONTENT ═══════ -->
+<main class="content">
+
+<!-- ══ PAGE: 실시간 현황 ══ -->
+<div class="page active" id="page-overview">
+  <div class="page-header">
+    <div><div class="page-title">실시간 현황</div><div class="page-desc">대전중앙시장 제3주차장 에너지 운영 현황 · 1초 주기 갱신</div></div>
+    <div class="page-actions">
+      <button class="btn">📥 데이터 내보내기</button>
+      <button class="btn btn-primary">⚙ EMS 제어</button>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-icon" style="background:#FEF3C7">☀</div>
+      <div class="kpi-body">
+        <div class="kpi-label">현재 발전량</div>
+        <div class="kpi-value" style="color:var(--c-yellow)" id="kv-gen">32.4 kW</div>
+        <div class="kpi-sub">설비용량 50kW 대비</div>
+        <div class="kpi-trend up" id="kt-gen">▲ 64.8% 이용률</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--c-primary-s)">⚡</div>
+      <div class="kpi-body">
+        <div class="kpi-label">금일 누적 발전</div>
+        <div class="kpi-value" style="color:var(--c-primary)">187 kWh</div>
+        <div class="kpi-sub">예측 대비 +3.2%</div>
+        <div class="kpi-trend up">▲ 목표 초과 달성</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--c-orange-s)">📈</div>
+      <div class="kpi-body">
+        <div class="kpi-label">현재 수요</div>
+        <div class="kpi-value" style="color:var(--c-orange)" id="kv-demand">41.1 kW</div>
+        <div class="kpi-sub">피크 한계 60kW 대비</div>
+        <div class="kpi-trend neu" id="kt-demand">— 68.5% 부하율</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--c-green-s)">🚗</div>
+      <div class="kpi-body">
+        <div class="kpi-label">EV 충전 중</div>
+        <div class="kpi-value" style="color:var(--c-green)">3 대</div>
+        <div class="kpi-sub">급속 2 · 완속 1</div>
+        <div class="kpi-trend up">▲ 금일 수익 33,180원</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g21">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">⚡ 에너지 흐름 (실시간)</div>
+        <span class="badge bg-green"><span class="sdot green"></span>정상 운영</span>
+      </div>
+      <div class="eflow">
+        <div class="enode solar"><div class="enode-icon">☀</div><div class="enode-name">태양광</div><div class="enode-val" id="ef-solar">32.4 kW</div></div>
+        <div class="earrow"><div class="earrow-line"></div><div class="earrow-lbl">직접 공급</div></div>
+        <div class="enode"><div class="enode-icon">🏢</div><div class="enode-name">주차장 부하</div><div class="enode-val">19.8 kW</div></div>
+        <div class="earrow"><div class="earrow-line"></div><div class="earrow-lbl">피크컷</div></div>
+        <div class="enode grid"><div class="enode-icon">🔗</div><div class="enode-name">계통 연계</div><div class="enode-val">8.7 kW</div></div>
+        <div class="earrow"><div class="earrow-line"></div><div class="earrow-lbl">충전</div></div>
+        <div class="enode ev"><div class="enode-icon">🔌</div><div class="enode-name">EV 충전</div><div class="enode-val">3.9 kW</div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-title" style="margin-bottom:10px">📈 발전·소비 추이 (오늘)</div>
+      <div class="chart-box" style="height:150px"><canvas id="ch-overview"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-title">📊 부하 현황</div><span class="badge bg-yellow">피크 여유 18.9kW</span></div>
+      <div id="gauges-wrap">
+        <div class="gauge"><div class="gauge-hd"><span class="gauge-name">🏢 주차장 조명</span><span class="gauge-val">8.2 kW</span></div><div class="pbar"><div class="pbar-fill" style="width:16%;background:var(--c-primary)"></div></div></div>
+        <div class="gauge"><div class="gauge-hd"><span class="gauge-name">❄ 환기·냉방</span><span class="gauge-val">11.6 kW</span></div><div class="pbar"><div class="pbar-fill" style="width:23%;background:var(--c-yellow)"></div></div></div>
+        <div class="gauge"><div class="gauge-hd"><span class="gauge-name">⚡ EV 급속 #1</span><span class="gauge-val">44.3 kW</span></div><div class="pbar"><div class="pbar-fill" style="width:89%;background:var(--c-green)"></div></div></div>
+        <div class="gauge"><div class="gauge-hd"><span class="gauge-name">⚡ EV 급속 #2</span><span class="gauge-val">38.1 kW</span></div><div class="pbar"><div class="pbar-fill" style="width:76%;background:var(--c-green)"></div></div></div>
+        <div class="gauge"><div class="gauge-hd"><span class="gauge-name">🔌 EV 완속 #3</span><span class="gauge-val">7.0 kW</span></div><div class="pbar"><div class="pbar-fill" style="width:14%;background:var(--c-teal)"></div></div></div>
+      </div>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--c-text3)">계통 역송 방지 임계값</span><strong>60 kW</strong></div>
+    </div>
+  </div>
+
+  <div class="g3">
+    <div class="card"><div class="card-title" style="margin-bottom:10px">📅 월별 발전량 추이</div><div class="chart-box" style="height:130px"><canvas id="ch-monthly"></canvas></div></div>
+    <div class="card"><div class="card-title" style="margin-bottom:10px">🎯 예측 vs 실측 (7일)</div><div class="chart-box" style="height:130px"><canvas id="ch-vs"></canvas></div></div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:10px">🚗 EV 충전 이력 (오늘)</div>
+      <table class="tbl"><thead><tr><th>시간</th><th>충전량</th><th>태양광</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td>09:12</td><td>22.4 kWh</td><td>18.1</td><td><span class="badge bg-green">완료</span></td></tr>
+        <tr><td>10:55</td><td>15.8 kWh</td><td>15.8</td><td><span class="badge bg-green">완료</span></td></tr>
+        <tr><td>12:33</td><td>진행 중</td><td>—</td><td><span class="badge bg-blue">충전 중</span></td></tr>
+        <tr><td>13:10</td><td>진행 중</td><td>—</td><td><span class="badge bg-blue">충전 중</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: EV 충전 ══ -->
+<div class="page" id="page-ev">
+  <div class="page-header">
+    <div><div class="page-title">EV 충전 관리</div><div class="page-desc">스마트 충전 스케줄링 및 충전기 실시간 제어</div></div>
+    <div class="page-actions"><button class="btn btn-primary">+ 충전 스케줄 설정</button></div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-icon" style="background:var(--c-green-s)">🔋</div><div class="kpi-body"><div class="kpi-label">금일 충전량</div><div class="kpi-value" style="color:var(--c-green)">94.8 kWh</div><div class="kpi-sub">태양광 72% 공급</div><div class="kpi-trend up">▲ 전일 대비 +8%</div></div></div>
+    <div class="kpi"><div class="kpi-icon" style="background:var(--c-primary-s)">💰</div><div class="kpi-body"><div class="kpi-label">금일 충전 수익</div><div class="kpi-value" style="color:var(--c-primary)">33,180원</div><div class="kpi-sub">단가 350원/kWh</div><div class="kpi-trend up">▲ 이번달 누계 190만원</div></div></div>
+    <div class="kpi"><div class="kpi-icon" style="background:var(--c-yellow-s)">📊</div><div class="kpi-body"><div class="kpi-label">충전기 가동률</div><div class="kpi-value" style="color:var(--c-yellow)">67.3%</div><div class="kpi-sub">급속 2기 기준</div><div class="kpi-trend neu">— 목표 70%</div></div></div>
+    <div class="kpi"><div class="kpi-icon" style="background:var(--c-teal-s)">🌱</div><div class="kpi-body"><div class="kpi-label">CO₂ 저감</div><div class="kpi-value" style="color:var(--c-teal)">42.4 kg</div><div class="kpi-sub">0.4479 kg-CO₂/kWh</div><div class="kpi-trend up">▲ 이번달 1,528kg</div></div></div>
+  </div>
+  <div class="g21">
+    <div class="card">
+      <div class="card-hd"><div class="card-title">🔌 충전기 실시간 현황</div><span class="badge bg-blue">자동 제어 중</span></div>
+      <table class="tbl">
+        <thead><tr><th>충전기</th><th>상태</th><th>현재 전력</th><th>태양광 비율</th><th>충전량</th><th>예상 완료</th><th>제어</th></tr></thead>
+        <tbody>
+          <tr><td>급속 #1 (50kW)</td><td><span class="badge bg-blue">충전 중</span></td><td>44.3 kW</td><td>73%</td><td>18.2 kWh</td><td>14:42</td><td><button class="btn" style="padding:3px 8px;font-size:10px">일시정지</button></td></tr>
+          <tr><td>급속 #2 (50kW)</td><td><span class="badge bg-blue">충전 중</span></td><td>38.1 kW</td><td>85%</td><td>9.7 kWh</td><td>15:05</td><td><button class="btn" style="padding:3px 8px;font-size:10px">일시정지</button></td></tr>
+          <tr><td>완속 #3 (7kW)</td><td><span class="badge bg-gray">대기 중</span></td><td>0 kW</td><td>—</td><td>—</td><td>—</td><td><button class="btn btn-success" style="padding:3px 8px;font-size:10px;color:#fff">시작</button></td></tr>
+          <tr><td>완속 #4 (7kW)</td><td><span class="badge bg-red">점검 중</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td><button class="btn" style="padding:3px 8px;font-size:10px">점검 보고</button></td></tr>
+        </tbody>
+      </table>
+      <div class="divider"></div>
+      <div style="background:var(--c-surface2);border-radius:var(--r);padding:10px;font-size:11px;color:var(--c-text2);line-height:1.8">
+        <strong style="color:var(--c-primary)">스마트 충전 모드 활성:</strong> 태양광 잉여 전력 우선 EV 배분 중<br>
+        <strong style="color:var(--c-yellow)">피크 예상 13:00~14:00:</strong> 충전 출력 자동 30% 제한 예약됨
+      </div>
+    </div>
+    <div class="card"><div class="card-title" style="margin-bottom:10px">⏰ 시간별 충전 수요 예측</div><div class="chart-box" style="height:220px"><canvas id="ch-ev"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: 태양광 예측 ══ -->
+<div class="page" id="page-solar">
+  <div class="page-header">
+    <div><div class="page-title">태양광 발전량 예측 모델</div><div class="page-desc">기상청 실시간 데이터 기반 Perez·LSTM 앙상블 예측</div></div>
+  </div>
+  <div class="stabs">
+    <div class="stab active" onclick="stab('sol-in',this)">입력 파라미터</div>
+    <div class="stab" onclick="stab('sol-out',this)">예측 결과</div>
+    <div class="stab" onclick="stab('sol-model',this)">모델 정보</div>
+  </div>
+
+  <!-- 입력 -->
+  <div class="spage active" id="sub-sol-in">
+    <div class="steps">
+      <div class="step"><div class="step-n active" id="sn1">1</div><span class="step-lbl active">주소 입력 &amp; 기상 조회</span></div>
+      <div class="step-sep" id="sl1"></div>
+      <div class="step"><div class="step-n todo" id="sn2">2</div><span class="step-lbl">시스템 파라미터</span></div>
+      <div class="step-sep" id="sl2"></div>
+      <div class="step"><div class="step-n todo" id="sn3">3</div><span class="step-lbl">모델 선택 &amp; 실행</span></div>
+    </div>
+
+    <div class="addr-box">
+      <div class="addr-label">📍 설치 주소 입력 — 기상 데이터 자동 수집</div>
+      <div class="addr-sub">시·군·구·동 + 번지수 입력 시 기상청 격자 변환 → 기온·운량·일사량·PM2.5 자동 조회</div>
+      <div class="addr-row">
+        <input class="addr-input" id="addr-txt" value="대전광역시 동구 중앙로 210" placeholder="예: 대전광역시 동구 중앙로 210">
+        <button class="btn-search" id="btn-search" onclick="searchAddr()">🔍 주소 조회 <span class="spin-sm" id="addr-spin"></span></button>
+        <button class="btn" onclick="defaultAddr()">기본값 적용</button>
+      </div>
+      <div class="chips" id="api-chips">
+        <div class="chip"><span class="chip-dot idle"></span>Geocoding API</div>
+        <div class="chip"><span class="chip-dot idle"></span>기상청 단기예보</div>
+        <div class="chip"><span class="chip-dot idle"></span>NASA POWER 일사량</div>
+        <div class="chip"><span class="chip-dot idle"></span>에어코리아 PM2.5</div>
+      </div>
+      <div class="wx-panel" id="wx-panel">
+        <div class="wx-hd">
+          <div><div class="wx-loc" id="wx-loc">-</div><div class="wx-meta" id="wx-meta">-</div></div>
+          <div style="display:flex;gap:8px;align-items:center"><div class="wx-src" id="wx-src">-</div><button class="btn" style="padding:4px 10px;font-size:11px" onclick="searchAddr()">↻</button></div>
+        </div>
+        <div class="wx-grid" id="wx-grid"></div>
+        <div class="mini-map"><span>📍</span><span id="wx-map-lbl">위치 표시</span></div>
+      </div>
+    </div>
+
+    <div class="fsec">
+      <div class="fsec-title">⚙ 태양광 시스템 파라미터 <span style="font-size:11px;font-weight:400;color:var(--c-text3)">기상 조회 후 자동 입력 · 수정 가능</span></div>
+      <div class="form-grid">
+        <div class="fg"><label class="fl">설치 용량 (kWp)</label><input class="fi" id="s-cap" value="50" type="number"><span class="fhint">대전중앙시장 3주차장 설치 용량</span></div>
+        <div class="fg"><label class="fl">패널 효율 (%)</label><input class="fi" id="s-eff" value="20.3" type="number" step="0.1"></div>
+        <div class="fg"><label class="fl">인버터 효율 (%)</label><input class="fi" id="s-inv" value="97.5" type="number" step="0.1"></div>
+        <div class="fg"><label class="fl">경사각 (°)</label><input class="fi" id="s-tilt" value="30" type="number"></div>
+        <div class="fg"><label class="fl">방위각 (° 남향=0)</label><input class="fi" id="s-az" value="0" type="number"></div>
+        <div class="fg"><label class="fl">손실계수 (%) <span class="autotag" id="atag-loss"></span></label><input class="fi" id="s-loss" value="14" type="number"><span class="fhint" id="hint-loss">배선·먼지·온도 합산</span></div>
+      </div>
+    </div>
+
+    <div class="fsec">
+      <div class="fsec-title">🌤 기상 파라미터 <span style="font-size:11px;font-weight:400;color:var(--c-green)" id="wx-lbl">주소 조회 후 자동 입력됩니다</span></div>
+      <div class="form-grid">
+        <div class="fg"><label class="fl">위도 (°N) <span class="autotag" id="at-lat"></span></label><input class="fi" id="s-lat" value="36.35" type="number" step="0.0001"></div>
+        <div class="fg"><label class="fl">경도 (°E) <span class="autotag" id="at-lng"></span></label><input class="fi" id="s-lng" value="127.38" type="number" step="0.0001"></div>
+        <div class="fg"><label class="fl">격자 X (nx) <span class="autotag" id="at-nx"></span></label><input class="fi" id="s-nx" value="67" type="number"></div>
+        <div class="fg"><label class="fl">격자 Y (ny) <span class="autotag" id="at-ny"></span></label><input class="fi" id="s-ny" value="100" type="number"></div>
+        <div class="fg"><label class="fl">기온 (°C) <span class="autotag" id="at-tmp"></span></label><input class="fi" id="s-temp" value="28" type="number"><span class="fhint" id="h-temp">기상청 단기예보 TMP</span></div>
+        <div class="fg"><label class="fl">운량 (0-10) <span class="autotag" id="at-sky"></span></label><input class="fi" id="s-cloud" value="2" type="number" min="0" max="10"><span class="fhint" id="h-cloud">0=맑음 · 10=흐림</span></div>
+        <div class="fg"><label class="fl">일사량 GHI (MJ/m²) <span class="autotag" id="at-ghi"></span></label><input class="fi" id="s-ghi" value="18.5" type="number" step="0.1"><span class="fhint" id="h-ghi">NASA POWER</span></div>
+        <div class="fg"><label class="fl">대기오염 <span class="autotag" id="at-dust"></span></label><select class="fi" id="s-dust"><option value="0">좋음 (0~15 μg/m³)</option><option value="1" selected>보통 (16~35)</option><option value="2">나쁨 (36~75)</option><option value="3">매우나쁨 (76+)</option></select><span class="fhint" id="h-dust">에어코리아</span></div>
+        <div class="fg"><label class="fl">강수확률 (%) <span class="autotag" id="at-pop"></span></label><input class="fi" id="s-pop" value="10" type="number" min="0" max="100"><span class="fhint" id="h-pop">기상청 POP</span></div>
+      </div>
+    </div>
+
+    <div class="fsec">
+      <div class="fsec-title">🤖 예측 모델 &amp; 실행 조건</div>
+      <div class="form-grid">
+        <div class="fg"><label class="fl">예측 날짜</label><input class="fi" id="s-date" type="date"></div>
+        <div class="fg"><label class="fl">예측 기간</label><select class="fi" id="s-period"><option>1일 (24시간)</option><option>7일</option><option>30일</option></select></div>
+        <div class="fg"><label class="fl">예측 알고리즘</label><select class="fi" id="s-algo"><option>물리 모델 (Perez)</option><option>LSTM 신경망</option><option>앙상블 (물리+ML)</option><option>통계 모델 (SARIMA)</option></select></div>
+        <div class="fg"><label class="fl">신뢰구간</label><select class="fi" id="s-ci"><option>90%</option><option>80%</option><option>70%</option></select></div>
+        <div class="fg"><label class="fl">온도 계수 (%/°C)</label><input class="fi" id="s-tcoef" value="-0.37" type="number" step="0.01"></div>
+        <div class="fg"><label class="fl">데이터 소스</label><select class="fi" id="s-src"><option>기상청 단기예보 (실시간)</option><option>기상청 중기예보</option><option>NASA POWER 재분석</option><option>과거 평균값</option></select></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn-run" onclick="runForecast()">⚡ 예측 시뮬레이션 실행</button>
+      <button class="btn" onclick="resetSolar()">↺ 초기화</button>
+      <span id="wx-ready" style="font-size:11px;color:var(--c-text3)"></span>
+    </div>
+  </div>
+
+  <!-- 결과 -->
+  <div class="spage" id="sub-sol-out">
+    <div class="loader-wrap" id="sol-loader"><div class="loader"></div><div class="loader-txt" id="sol-msg">예측 중...</div><div class="pbar-track"><div class="pbar-run" id="sol-prog"></div></div></div>
+    <div id="sol-result" style="display:none">
+      <div style="font-size:11px;color:var(--c-text3);margin-bottom:12px" id="sol-summary"></div>
+      <div class="res-grid">
+        <div class="res-item res-green"><div class="res-val" id="r-daily">-</div><div class="res-lbl">예측 일 발전량</div></div>
+        <div class="res-item res-yellow"><div class="res-val" id="r-peak">-</div><div class="res-lbl">피크 발전 전력</div></div>
+        <div class="res-item res-blue"><div class="res-val" id="r-sun">-</div><div class="res-lbl">유효 일조시간</div></div>
+        <div class="res-item res-orange"><div class="res-val" id="r-pr">-</div><div class="res-lbl">성능비 (PR)</div></div>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hd"><div class="card-title">☀ 시간별 발전량 예측 (kW)</div><div id="fc-meta" style="font-size:11px;color:var(--c-text3)"></div></div>
+        <div class="chart-box" style="height:200px"><canvas id="ch-forecast"></canvas></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="card-title" style="margin-bottom:10px">🥧 태양광 공급 배분</div><div class="chart-box" style="height:160px"><canvas id="ch-pie"></canvas></div></div>
+        <div class="card"><div class="card-title" style="margin-bottom:10px">📋 EMS 운영 모드</div><table class="tbl"><thead><tr><th>시간대</th><th>발전(kW)</th><th>운영 모드</th><th>EV 충전</th></tr></thead><tbody id="ops-tbl"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모델 정보 -->
+  <div class="spage" id="sub-sol-model">
+    <div class="g2" style="margin-bottom:14px">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">📐 Perez 물리 모델</div>
+        <div style="font-size:12px;color:var(--c-text2);line-height:1.9">
+          <p style="margin-bottom:8px">수평면 전일사량(GHI)을 직달·산란·반사로 분리하여 경사면 일사량(POA)을 산출합니다.</p>
+          <div style="background:var(--c-surface2);border:1px solid var(--c-border);border-radius:var(--r);padding:10px;font-family:monospace;font-size:11px;color:var(--c-primary);line-height:1.9">
+            P_out = G_poa × A × η × (1−PR_loss)<br>
+            G_poa = G_b·R_b + G_d·F_perez + ρ·G·(1−cosθ)/2<br>
+            PR_loss = f(T_coef, 먼지, 배선, 미스매치)
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:10px">🔗 기상청 API 연동 구조</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+          <div style="background:var(--c-surface2);border:1px solid var(--c-border);border-radius:6px;padding:7px 10px">① 주소 → Kakao Geocoding → (위도, 경도)</div>
+          <div style="text-align:center;color:var(--c-text3)">↓ Lambert 격자 변환</div>
+          <div style="background:var(--c-primary-s);border:1px solid var(--c-primary);border-radius:6px;padding:7px 10px">② 기상청 격자(nx, ny) → 단기예보 API<br><span style="color:var(--c-text3)">기온·운량·강수확률·풍속</span></div>
+          <div style="text-align:center;color:var(--c-text3)">↓ 병렬 조회</div>
+          <div style="background:var(--c-yellow-s);border:1px solid #EAB308;border-radius:6px;padding:7px 10px">③ NASA POWER → GHI, DNI, DHI</div>
+          <div style="text-align:center;color:var(--c-text3)">↓</div>
+          <div style="background:var(--c-green-s);border:1px solid var(--c-green);border-radius:6px;padding:7px 10px">④ Perez 모델 → 24h 발전량 예측</div>
+        </div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title" style="margin-bottom:10px">📅 대전 월별 평균 일조시간 &amp; 50kWp 예상 발전량</div><div class="chart-box" style="height:180px"><canvas id="ch-monthly-char"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: 경제성 분석 ══ -->
+<div class="page" id="page-economics">
+  <div class="page-header">
+    <div><div class="page-title">경제성 분석</div><div class="page-desc">분산자원 설치 의사결정 지원 도구 · NPV·IRR·회수기간 자동 산출</div></div>
+  </div>
+  <div class="stabs">
+    <div class="stab active" onclick="stab('ec-in',this)">분석 조건 입력</div>
+    <div class="stab" onclick="stab('ec-out',this)">분석 결과</div>
+    <div class="stab" onclick="stab('ec-sc',this)">시나리오 비교</div>
+  </div>
+
+  <div class="spage active" id="sub-ec-in">
+    <div class="fsec"><div class="fsec-title">🏗 설비 투자비</div><div class="form-grid">
+      <div class="fg"><label class="fl">태양광 설치비 (천원/kWp)</label><input class="fi" id="e-sc" value="1200" type="number"></div>
+      <div class="fg"><label class="fl">EV 급속충전기 (천원/기)</label><input class="fi" id="e-ec" value="28000" type="number"></div>
+      <div class="fg"><label class="fl">급속충전기 설치 기수</label><input class="fi" id="e-en" value="2" type="number"></div>
+      <div class="fg"><label class="fl">EMS 시스템 구축비 (천원)</label><input class="fi" id="e-mc" value="35000" type="number"></div>
+      <div class="fg"><label class="fl">전기 인입 공사비 (천원)</label><input class="fi" id="e-cc" value="15000" type="number"></div>
+      <div class="fg"><label class="fl">기타 부대비용 (천원)</label><input class="fi" id="e-xc" value="8000" type="number"></div>
+    </div></div>
+    <div class="fsec"><div class="fsec-title">💰 수익 및 운영 조건</div><div class="form-grid">
+      <div class="fg"><label class="fl">전력 구매단가 (원/kWh)</label><input class="fi" id="e-br" value="120" type="number"></div>
+      <div class="fg"><label class="fl">EV 충전 판매단가 (원/kWh)</label><input class="fi" id="e-er" value="350" type="number"></div>
+      <div class="fg"><label class="fl">연간 전력 상승률 (%)</label><input class="fi" id="e-ri" value="3.5" type="number" step="0.5"></div>
+      <div class="fg"><label class="fl">연간 발전량 감쇠율 (%)</label><input class="fi" id="e-dg" value="0.5" type="number" step="0.1"></div>
+      <div class="fg"><label class="fl">연간 유지보수비 (천원)</label><input class="fi" id="e-mt" value="3500" type="number"></div>
+      <div class="fg"><label class="fl">EV 일 평균 이용 횟수</label><input class="fi" id="e-eu" value="8" type="number"></div>
+    </div></div>
+    <div class="fsec"><div class="fsec-title">📐 분석 조건</div><div class="form-grid">
+      <div class="fg"><label class="fl">분석 기간 (년)</label><input class="fi" id="e-yr" value="20" type="number"></div>
+      <div class="fg"><label class="fl">할인율 (%)</label><input class="fi" id="e-dr" value="4.5" type="number" step="0.5"></div>
+      <div class="fg"><label class="fl">정부 보조금 (천원)</label><input class="fi" id="e-sb" value="25000" type="number"></div>
+      <div class="fg"><label class="fl">REC 가중치</label><select class="fi" id="e-rw"><option value="1.5">1.5 (건물형)</option><option value="1.2">1.2 (일반)</option><option value="1.0">1.0 (지상형)</option></select></div>
+      <div class="fg"><label class="fl">REC 단가 (원/REC)</label><input class="fi" id="e-rp" value="45000" type="number"></div>
+      <div class="fg"><label class="fl">법인세율 (%)</label><input class="fi" id="e-tx" value="10" type="number"></div>
+    </div></div>
+    <div style="display:flex;gap:10px"><button class="btn-run" onclick="runEcon()">📊 경제성 분석 실행</button><button class="btn" onclick="resetEcon()">↺ 초기화</button></div>
+  </div>
+
+  <div class="spage" id="sub-ec-out">
+    <div class="loader-wrap" id="ec-loader"><div class="loader"></div><div class="loader-txt">현금흐름 분석 중...</div><div class="pbar-track"><div class="pbar-run" id="ec-prog"></div></div></div>
+    <div id="ec-result" style="display:none">
+      <div style="background:var(--c-primary-s);border:1px solid var(--c-primary);border-radius:var(--r-lg);padding:16px;margin-bottom:14px">
+        <div style="font-size:13px;font-weight:700;color:var(--c-primary);margin-bottom:10px">📊 핵심 경제성 지표</div>
+        <div class="res-grid" style="margin-bottom:10px">
+          <div class="res-item res-green"><div class="res-val" id="r-npv">-</div><div class="res-lbl">NPV (순현재가치)</div></div>
+          <div class="res-item res-blue"><div class="res-val" id="r-irr">-</div><div class="res-lbl">IRR (내부수익률)</div></div>
+          <div class="res-item res-yellow"><div class="res-val" id="r-pb">-</div><div class="res-lbl">투자 회수기간</div></div>
+          <div class="res-item res-orange"><div class="res-val" id="r-bcr">-</div><div class="res-lbl">B/C Ratio</div></div>
+        </div>
+        <div class="res-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:0">
+          <div class="res-item res-green"><div class="res-val" id="r-rev">-</div><div class="res-lbl">총 수익</div></div>
+          <div class="res-item" style="background:var(--c-red-s)"><div class="res-val" style="color:var(--c-red)" id="r-cost">-</div><div class="res-lbl">총 비용</div></div>
+          <div class="res-item res-yellow"><div class="res-val" id="r-lcoe">-</div><div class="res-lbl">LCOE (원/kWh)</div></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="card-title" style="margin-bottom:10px">📈 연도별 누적 현금흐름 (백만원)</div><div class="chart-box" style="height:200px"><canvas id="ch-cf"></canvas></div></div>
+        <div class="card"><div class="card-title" style="margin-bottom:10px">🥧 수익 구성 분해</div><div class="chart-box" style="height:200px"><canvas id="ch-rev"></canvas></div></div>
+      </div>
+      <div class="card"><div class="card-title" style="margin-bottom:10px">📋 연도별 현금흐름표 (단위: 천원)</div>
+        <div style="overflow-x:auto"><table class="tbl" id="cf-tbl"><thead><tr><th>연도</th><th class="tbl-num">전력 절감</th><th class="tbl-num">EV 수익</th><th class="tbl-num">REC 수익</th><th class="tbl-num">유지비</th><th class="tbl-num">순현금흐름</th><th class="tbl-num">누적</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="spage" id="sub-ec-sc">
+    <div style="font-size:13px;color:var(--c-text2);margin-bottom:14px">경제성 분석 실행 후 3가지 시나리오를 자동 비교합니다.</div>
+    <div class="sc-grid" id="sc-cards" style="margin-bottom:14px"></div>
+    <div class="card"><div class="card-title" style="margin-bottom:10px">📊 시나리오별 NPV 비교</div><div class="chart-box" style="height:200px"><canvas id="ch-sc"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: 보고서 ══ -->
+<div class="page" id="page-report">
+  <div class="page-header">
+    <div><div class="page-title">운영 보고서</div><div class="page-desc">월간 에너지 운영 실적 · 자동 생성 및 PDF 출력</div></div>
+    <div class="page-actions">
+      <select class="fi" id="rpt-mo" style="width:130px;padding:6px 10px;font-size:12px" onchange="renderReport()">
+        <option value="1">2025년 1월</option><option value="2">2025년 2월</option><option value="3">2025년 3월</option>
+        <option value="4">2025년 4월</option><option value="5">2025년 5월</option><option value="6" selected>2025년 6월</option>
+      </select>
+      <button class="btn" onclick="renderReport()">↻ 새로고침</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨 PDF 출력</button>
+    </div>
+  </div>
+
+  <div class="rpt-sec"><div class="rpt-sec-hd">01 기본 정보</div><div class="rpt-sec-body">
+    <div class="rpt-info-grid">
+      <div class="rpt-info-row"><span class="rpt-ik">시설명</span><span class="rpt-iv">대전중앙시장 제3주차장</span></div>
+      <div class="rpt-info-row"><span class="rpt-ik">주소</span><span class="rpt-iv">대전광역시 동구 중앙로 210</span></div>
+      <div class="rpt-info-row"><span class="rpt-ik">보고 기간</span><span class="rpt-iv" id="rpt-period">-</span></div>
+      <div class="rpt-info-row"><span class="rpt-ik">태양광 설비</span><span class="rpt-iv">50 kWp · 단결정 실리콘 · 경사각 30° · 남향</span></div>
+      <div class="rpt-info-row"><span class="rpt-ik">EV 충전기</span><span class="rpt-iv">급속 2기 (각 50kW) · 완속 2기 (각 7kW)</span></div>
+      <div class="rpt-info-row"><span class="rpt-ik">EMS 시스템</span><span class="rpt-iv">U-EMS v11.0 · 분산자원 연계 도시형</span></div>
+      <div class="rpt-info-row"><span class="rpt-ik">보고서 생성</span><span class="rpt-iv" id="rpt-gen">-</span></div>
+    </div>
+  </div></div>
+
+  <div class="rpt-sec"><div class="rpt-sec-hd">02 에너지 생산 · 소비 · 거래량</div><div class="rpt-sec-body">
+    <div class="rpt-kpi-row" id="rpt-kpis" style="margin-bottom:14px"></div>
+    <div class="g2">
+      <div class="card" style="padding:14px"><div class="card-title" style="margin-bottom:8px">일별 생산·소비·거래량</div><div class="chart-box" style="height:190px"><canvas id="ch-rpt-daily"></canvas></div></div>
+      <div class="card" style="padding:14px"><div class="card-title" style="margin-bottom:8px">에너지 흐름 요약</div><div class="flow-row" id="rpt-flow"></div></div>
+    </div>
+  </div></div>
+
+  <div class="rpt-sec"><div class="rpt-sec-hd">03 이벤트 — 부하 및 피크 대체</div><div class="rpt-sec-body">
+    <div class="g21">
+      <table class="tbl"><thead><tr><th>날짜</th><th>시간</th><th>이벤트 유형</th><th class="tbl-num">피크 전력</th><th class="tbl-num">대체량</th><th class="tbl-num">절감액</th><th>결과</th></tr></thead><tbody id="rpt-events"></tbody></table>
+      <div class="card" style="padding:14px">
+        <div class="card-title" style="margin-bottom:8px">피크 대체 현황</div>
+        <div class="peak-stat" id="rpt-peak-stats"></div>
+        <div class="chart-box" style="height:120px;margin-top:10px"><canvas id="ch-rpt-peak"></canvas></div>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="rpt-sec"><div class="rpt-sec-hd">04 EV 충전 스케줄링</div><div class="rpt-sec-body">
+    <div class="g12">
+      <div>
+        <div class="rpt-kpi-row" id="rpt-ev-kpis" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px"></div>
+        <table class="tbl"><thead><tr><th>일자</th><th class="tbl-num">충전횟수</th><th class="tbl-num">충전량(kWh)</th><th class="tbl-num">태양광(%)</th><th>피크회피</th><th class="tbl-num">수익(원)</th></tr></thead><tbody id="rpt-ev-rows"></tbody></table>
+      </div>
+      <div class="card" style="padding:14px">
+        <div class="card-title" style="margin-bottom:8px">스마트 충전 스케줄 (대표일)</div>
+        <div class="chart-box" style="height:170px"><canvas id="ch-rpt-ev"></canvas></div>
+        <div style="margin-top:8px;font-size:11px;color:var(--c-text2);line-height:1.7" id="rpt-ev-note"></div>
+      </div>
+    </div>
+  </div></div>
+
+  <div class="rpt-sec"><div class="rpt-sec-hd">05 월별 성과 추이</div><div class="rpt-sec-body">
+    <div class="g3">
+      <div class="card" style="padding:14px"><div class="card-title" style="margin-bottom:8px">발전량 추이 (2025)</div><div class="chart-box" style="height:150px"><canvas id="ch-rpt-mon"></canvas></div></div>
+      <div class="card" style="padding:14px"><div class="card-title" style="margin-bottom:8px">에너지 자립률</div><div class="chart-box" style="height:150px"><canvas id="ch-rpt-self"></canvas></div></div>
+      <div class="card" style="padding:14px"><div class="card-title" style="margin-bottom:8px">CO₂ 저감 누계</div><div class="chart-box" style="height:150px"><canvas id="ch-rpt-co2"></canvas></div></div>
+    </div>
+  </div></div>
+
+  <div class="rpt-sec" style="margin-bottom:0"><div class="rpt-sec-hd">06 종합 운영 의견</div><div class="rpt-sec-body">
+    <div class="opinion-box" id="rpt-opinion"></div>
+  </div></div>
+</div>
+
+<!-- ══ PAGE: 설정 ══ -->
+<div class="page" id="page-settings">
+  <div class="page-header"><div><div class="page-title">시스템 설정</div><div class="page-desc">U-EMS 운영 환경 및 알림 설정</div></div></div>
+  <div class="g2">
+    <div class="card"><div class="card-title" style="margin-bottom:12px">⚡ EMS 운영 파라미터</div>
+      <div class="form-grid-2">
+        <div class="fg"><label class="fl">피크 임계값 (kW)</label><input class="fi" value="60" type="number"></div>
+        <div class="fg"><label class="fl">역송 방지 여유 (kW)</label><input class="fi" value="5" type="number"></div>
+        <div class="fg"><label class="fl">EV 피크 제한 비율 (%)</label><input class="fi" value="30" type="number"></div>
+        <div class="fg"><label class="fl">야간 완속 시작 시간</label><input class="fi" value="22:00" type="time"></div>
+      </div>
+      <div style="margin-top:12px"><button class="btn btn-primary">💾 저장</button></div>
+    </div>
+    <div class="card"><div class="card-title" style="margin-bottom:12px">🔔 알림 설정</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:12px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" checked> 피크 초과 경고 알림</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" checked> EV 충전기 오류 알림</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" checked> 월간 보고서 자동 생성</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox"> 예측 오차 10% 초과 알림</label>
+        <div class="fg" style="margin-top:4px"><label class="fl">알림 이메일</label><input class="fi" value="manager@daejeon-market.kr" type="email"></div>
+      </div>
+      <div style="margin-top:12px"><button class="btn btn-primary">💾 저장</button></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title" style="margin-bottom:12px">🔑 API 키 관리</div>
+    <div class="form-grid">
+      <div class="fg"><label class="fl">기상청 공공데이터 API 키</label><input class="fi" type="password" placeholder="등록된 키: ●●●●●●...KR42" value="dummy"></div>
+      <div class="fg"><label class="fl">카카오 REST API 키</label><input class="fi" type="password" placeholder="등록된 키: ●●●●●●...aF9k" value="dummy"></div>
+      <div class="fg"><label class="fl">에어코리아 API 키</label><input class="fi" type="password" placeholder="등록된 키: ●●●●●●...Bq7m" value="dummy"></div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--c-text3)">※ API 키는 서버 환경변수(.env)로 관리됩니다. 이 화면에서 변경 시 서버 재시작이 필요합니다.</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════ UTILITIES ═══════════ */
+const $ = id => document.getElementById(id);
+const GC = 'rgba(0,0,0,.05)', TC = '#94A3B8', DK = '#1E293B';
+const H24 = Array.from({length:24},(_,i)=>i+':00');
+const genBase = [0,0,0,0,0,0,1.2,5.8,14.3,22.1,29.4,34.8,36.2,33.1,28.7,22.4,14.9,7.2,2.1,.3,0,0,0,0];
+const MONTHS = ['1월','2월','3월','4월','5월','6월'];
+const DAYS_IN_MO = [31,28,31,30,31,30];
+
+function showToast(msg, col) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.borderColor = col || 'var(--c-green)';
+  t.style.color = col || 'var(--c-green)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ═══════════ CLOCK ═══════════ */
+function tick() { $('clock').textContent = new Date().toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+setInterval(tick, 1000); tick();
+$('s-date').value = new Date().toISOString().slice(0,10);
+
+/* ═══════════ NAV ═══════════ */
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  $('page-'+id).classList.add('active');
+  el.classList.add('active');
+  if (id === 'report') initReport();
+  if (id === 'solar') initSolarModelChart();
+}
+
+function stab(id, el) {
+  const pg = el.closest('.page');
+  pg.querySelectorAll('.spage').forEach(p => p.classList.remove('active'));
+  pg.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+  $('sub-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+/* ═══════════ REALTIME UPDATES ═══════════ */
+let rtTick = 0;
+setInterval(() => {
+  rtTick++;
+  const gen = (30 + Math.sin(rtTick*.1)*8 + Math.random()*3).toFixed(1);
+  $('kv-gen').textContent = gen + ' kW';
+  $('ef-solar').textContent = gen + ' kW';
+  $('kt-gen').textContent = '▲ ' + (gen/50*100).toFixed(1) + '% 이용률';
+  const dem = (38 + Math.sin(rtTick*.07)*5 + Math.random()*2).toFixed(1);
+  $('kv-demand').textContent = dem + ' kW';
+  $('kt-demand').textContent = '— ' + (dem/60*100).toFixed(1) + '% 부하율';
+}, 3000);
+
+/* ═══════════ LAMBERT GRID ═══════════ */
+function latLonToGrid(lat, lon) {
+  const RE=6371.00877, GRID=5.0, SLAT1=30, SLAT2=60, OLON=126, OLAT=38, XO=43, YO=136, D=Math.PI/180;
+  const re=RE/GRID, s1=SLAT1*D, s2=SLAT2*D, ol=OLON*D, oa=OLAT*D;
+  const sn=Math.tan(Math.PI*.25+s2*.5)/Math.tan(Math.PI*.25+s1*.5);
+  const snln=Math.log(Math.cos(s1)/Math.cos(s2))/Math.log(sn);
+  const sf=Math.pow(Math.tan(Math.PI*.25+s1*.5),snln)*Math.cos(s1)/snln;
+  const ro=re*sf/Math.pow(Math.tan(Math.PI*.25+oa*.5),snln);
+  const ra=re*sf/Math.pow(Math.tan(Math.PI*.25+lat*D*.5),snln);
+  let theta=lon*D-ol;
+  if(theta>Math.PI)theta-=2*Math.PI; if(theta<-Math.PI)theta+=2*Math.PI;
+  theta*=snln;
+  return {nx:Math.floor(ra*Math.sin(theta)+XO+.5), ny:Math.floor(ro-ra*Math.cos(theta)+YO+.5)};
+}
+
+const REGIONS = {
+  '대전':{lat:36.3504,lon:127.3845},'중구':{lat:36.3248,lon:127.4218},'동구':{lat:36.312,lon:127.4546},
+  '서구':{lat:36.3555,lon:127.3831},'유성구':{lat:36.3624,lon:127.3562},'대덕구':{lat:36.3467,lon:127.4151},
+  '중앙로':{lat:36.3275,lon:127.4268},'대흥동':{lat:36.3248,lon:127.4218},'은행동':{lat:36.3294,lon:127.4275}
+};
+
+function guessCoords(addr) {
+  for(const [k,c] of Object.entries(REGIONS)) {
+    if(addr.includes(k)) {
+      const nums = addr.match(/\d+/g) || [0];
+      const seed = nums.reduce((a,b)=>+a+ +b, 0);
+      return {lat: c.lat+(seed%100-50)*.00008, lon: c.lon+(seed%100-50)*.0001};
+    }
+  }
+  return {lat:36.3504, lon:127.3845};
+}
+
+function simWeather(lat, lon, dateStr) {
+  const d = dateStr ? new Date(dateStr) : new Date();
+  const mo = d.getMonth()+1;
+  const tBase = [2.2,4.6,9.8,15.9,20.9,24.8,27.3,28.1,23.1,16.8,9.7,3.8][mo-1];
+  const temp = +(tBase+(lat-36.35)*.5+(Math.random()-.5)*1.5).toFixed(1);
+  const cBase = [3.2,3.5,3.8,3.6,3.9,5.2,7.1,6.8,4.9,3.3,3.1,3.0][mo-1];
+  const cloud = Math.min(10,Math.max(0,+(cBase+(Math.random()-.5)*2).toFixed(0)));
+  const ghiBase = [8.1,10.2,13.8,16.4,18.5,17.2,14.1,14.8,14.2,13.1,9.8,7.6][mo-1];
+  const ghi = +Math.max(2, ghiBase*(1-cloud*.07)+(Math.random()-.5)*1.2).toFixed(1);
+  const wind = +(1.5+Math.random()*2.5).toFixed(1);
+  const hum = Math.round(40+mo*2.5+Math.random()*15);
+  const popB = [15,20,25,35,40,55,65,60,40,25,20,15][mo-1];
+  const pop = Math.min(100,Math.max(0,Math.round(popB*(cloud/5)+Math.random()*10)));
+  const dustB = [25,30,35,28,20,18,15,15,18,22,28,28][mo-1];
+  const dust = Math.round(dustB+(Math.random()-.5)*10);
+  const dg = dust<=15?0:dust<=35?1:dust<=75?2:3;
+  const sr = [7.5,7.1,6.3,5.6,5.0,4.8,5.2,5.7,6.2,6.7,7.1,7.5][mo-1];
+  const ss = [17.5,18.1,18.5,19.1,19.6,19.8,19.6,19.1,18.4,17.8,17.3,17.1][mo-1];
+  return {temp,cloud,ghi,wind,hum,pop,dust,dg,sr:+sr.toFixed(1),ss:+ss.toFixed(1),daylen:+(ss-sr).toFixed(1),mo};
+}
+
+/* ═══════════ ADDRESS SEARCH ═══════════ */
+let curWx = null, curLoc = null;
+
+async function searchAddr() {
+  const addr = $('addr-txt').value.trim();
+  if(!addr) { showToast('주소를 입력해주세요','var(--c-red)'); return; }
+  const btn = $('btn-search'), sp = $('addr-spin');
+  btn.disabled = true; sp.classList.add('show');
+  setChips('loading');
+  await delay(400); setChips('geocode');
+  const coords = guessCoords(addr), grid = latLonToGrid(coords.lat, coords.lon);
+  await delay(500); setChips('weather');
+  const wx = simWeather(coords.lat, coords.lon, $('s-date').value);
+  await delay(300); setChips('nasa');
+  await delay(200); setChips('done');
+  curWx = wx; curLoc = {addr, ...coords, ...grid};
+  renderWxPanel(addr, coords, grid, wx);
+  autoFill(coords, grid, wx);
+  setSteps(2);
+  btn.disabled = false; sp.classList.remove('show');
+  showToast('📡 기상 데이터 수집 완료 — '+addr);
+  $('wx-ready').textContent = '✓ 기상 데이터 준비 완료';
+  $('wx-ready').style.color = 'var(--c-green)';
+}
+
+function setChips(stage) {
+  const chips = document.querySelectorAll('#api-chips .chip');
+  const dots  = document.querySelectorAll('#api-chips .chip-dot');
+  const lbls  = ['Geocoding API','기상청 단기예보','NASA POWER 일사량','에어코리아 PM2.5'];
+  if(stage==='loading') { dots.forEach((d,i)=>{ d.className='chip-dot loading'; chips[i].childNodes[1].textContent=' '+lbls[i]+'…'; }); return; }
+  const idx = {geocode:0,weather:1,nasa:2,done:3}[stage];
+  if(idx!==undefined) for(let i=0;i<=idx;i++) { dots[i].className='chip-dot ok'; chips[i].childNodes[1].textContent=' '+lbls[i]+' ✓'; }
+}
+
+function renderWxPanel(addr, coords, grid, wx) {
+  $('wx-panel').classList.add('show');
+  $('wx-loc').textContent = addr;
+  $('wx-meta').textContent = `위도 ${coords.lat.toFixed(4)}° · 경도 ${coords.lon.toFixed(4)}° · 기상청 격자 (nx:${grid.nx}, ny:${grid.ny})`;
+  $('wx-src').textContent = '기상청 단기예보 ' + new Date().toLocaleDateString('ko-KR');
+  const skyIdx = wx.cloud<=2?0:wx.cloud<=4?1:wx.cloud<=7?2:3;
+  const skyMap = ['☀ 맑음','🌤 구름조금','⛅ 구름많음','🌥 흐림'];
+  const dLbl = ['좋음','보통','나쁨','매우나쁨'];
+  const dCol = ['var(--c-green)','var(--c-yellow)','var(--c-orange)','var(--c-red)'];
+  const items = [
+    {icon:skyMap[skyIdx],val:skyMap[skyIdx].split(' ')[1],name:'하늘 상태',hl:false},
+    {icon:'🌡',val:wx.temp+'°C',name:'기온',hl:false},
+    {icon:'☁',val:wx.cloud+'/10',name:'운량',hl:true},
+    {icon:'☀',val:wx.ghi+' MJ/m²',name:'일사량 GHI',hl:true},
+    {icon:'💨',val:wx.wind+' m/s',name:'풍속',hl:false},
+    {icon:'💧',val:wx.hum+'%',name:'습도',hl:false},
+    {icon:'🌧',val:wx.pop+'%',name:'강수확률',hl:false},
+    {icon:'🏭',val:dLbl[wx.dg],name:'PM2.5',hl:false,col:dCol[wx.dg]},
+    {icon:'🌅',val:wx.sr+'시',name:'일출',hl:false},
+    {icon:'🌇',val:wx.ss+'시',name:'일몰',hl:false},
+    {icon:'⏱',val:wx.daylen+'h',name:'가조시간',hl:true},
+    {icon:'📅',val:wx.mo+'월',name:'예측 월',hl:false},
+  ];
+  $('wx-grid').innerHTML = items.map(it=>`<div class="wx-item${it.hl?' hl':''}"><div class="wx-icon">${it.icon}</div><div class="wx-val"${it.col?` style="color:${it.col}"`:''}">${it.val}</div><div class="wx-name">${it.name}</div></div>`).join('');
+  $('wx-map-lbl').textContent = `${addr} · ${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`;
+}
+
+function autoFill(coords, grid, wx) {
+  const sa = (id, val, tag, hint) => {
+    const el=$(id); el.value=val; el.classList.add('auto');
+    if(tag) $(tag).textContent='★자동';
+    if(hint) $(hint[0]).textContent=hint[1];
+    setTimeout(()=>el.classList.remove('auto'),3000);
+  };
+  sa('s-lat',coords.lat.toFixed(4),'at-lat');
+  sa('s-lng',coords.lon.toFixed(4),'at-lng');
+  sa('s-nx',grid.nx,'at-nx');
+  sa('s-ny',grid.ny,'at-ny');
+  sa('s-temp',wx.temp,'at-tmp',['h-temp','기상청 단기예보 TMP']);
+  sa('s-cloud',wx.cloud,'at-sky',['h-cloud','기상청 SKY 코드']);
+  sa('s-ghi',wx.ghi,'at-ghi',['h-ghi','NASA POWER + 기상청 일사']);
+  sa('s-pop',wx.pop,'at-pop',['h-pop','기상청 단기예보 POP']);
+  $('s-dust').value=wx.dg; $('at-dust').textContent='★자동'; $('h-dust').textContent='에어코리아 실시간';
+  const dL=[0,2,4,7][wx.dg], tL=Math.max(0,(wx.temp-25)*.37);
+  sa('s-loss',+(14+dL/3+tL/2).toFixed(1),'atag-loss',['hint-loss',`먼지 +${(dL/3).toFixed(1)}% · 온도 +${(tL/2).toFixed(1)}%`]);
+  $('wx-lbl').textContent='✓ 자동 입력 완료';
+}
+
+function setSteps(step) {
+  const ids=[['sn1','sl1'],['sn2','sl2'],['sn3',null]];
+  ids.forEach(([nid,lid],i)=>{
+    const n=$(nid);
+    if(i+1<step){n.className='step-n done';n.textContent='✓';if(lid)$(lid).classList.add('done');}
+    else if(i+1===step){n.className='step-n active';n.textContent=i+1;}
+    else{n.className='step-n todo';n.textContent=i+1;}
+  });
+}
+
+function defaultAddr() { $('addr-txt').value='대전광역시 동구 중앙로 210'; searchAddr(); }
+function resetSolar() {
+  $('addr-txt').value='대전광역시 동구 중앙로 210';
+  [['s-cap',50],['s-eff',20.3],['s-inv',97.5],['s-tilt',30],['s-az',0],['s-loss',14],['s-cloud',2],['s-temp',28],['s-ghi',18.5],['s-pop',10],['s-lat',36.35],['s-lng',127.38],['s-nx',67],['s-ny',100],['s-tcoef',-0.37]].forEach(([id,v])=>$(id).value=v);
+  $('s-dust').value=1;
+  $('wx-panel').classList.remove('show');
+  setSteps(1);
+  ['at-lat','at-lng','at-nx','at-ny','at-tmp','at-sky','at-ghi','at-pop','at-dust','atag-loss'].forEach(id=>{const el=$(id);if(el)el.textContent='';});
+  $('wx-ready').textContent='';
+  $('wx-lbl').textContent='주소 조회 후 자동 입력됩니다';
+  document.querySelectorAll('#api-chips .chip-dot').forEach(d=>d.className='chip-dot idle');
+  document.querySelectorAll('#api-chips .chip').forEach((c,i)=>{c.childNodes[1].textContent=[' Geocoding API',' 기상청 단기예보',' NASA POWER 일사량',' 에어코리아 PM2.5'][i];});
+}
+
+/* ═══════════ SOLAR FORECAST ═══════════ */
+let solCharts = {};
+
+async function runForecast() {
+  stab('sol-out', document.querySelector('[onclick*="sol-out"]'));
+  const lo=$('sol-loader'), rc=$('sol-result');
+  lo.classList.add('show'); rc.style.display='none';
+  const msgs=['기상 데이터 전처리 중...','Perez 일사량 모델 적용 중...','시간별 발전량 산출 중...','신뢰구간 계산 중...','EMS 스케줄 최적화 중...'];
+  let p=0, mi=0;
+  const prog=$('sol-prog');
+  await new Promise(resolve => {
+    const iv = setInterval(()=>{
+      p=Math.min(p+Math.random()*16,100);
+      prog.style.width=p+'%';
+      mi=Math.floor(p/20);
+      if(msgs[mi])$('sol-msg').textContent=msgs[mi];
+      if(p>=100){clearInterval(iv);setTimeout(resolve,300);}
+    },220);
+  });
+  lo.classList.remove('show'); rc.style.display='block';
+  buildForecast();
+}
+
+function buildForecast() {
+  const cap=+$('s-cap').value||50, eff=+$('s-eff').value/100;
+  const inv=+$('s-inv').value/100, loss=+$('s-loss').value/100;
+  const cloud=+$('s-cloud').value, temp=+$('s-temp').value;
+  const tcoef=+$('s-tcoef').value, tilt=+$('s-tilt').value;
+  const pop=+$('s-pop').value, dg=+$('s-dust').value;
+  const cf=1-cloud*.065, tF=1+(tcoef/100)*(temp-25);
+  const dF=[1,.97,.93,.87][dg], tiF=1+Math.sin((tilt-30)*Math.PI/180)*.03, pF=1-pop/100*.3;
+  const PR=+(inv*(1-loss)*tF*dF*tiF*pF).toFixed(3), peakW=cap*eff*PR;
+  const wx=curWx, dl=wx?wx.daylen:13.5, sr=wx?wx.sr:5.8;
+  const hourly=Array.from({length:24},(_,h)=>{
+    if(h<sr||h>sr+dl)return 0;
+    const noon=sr+dl/2, ang=(h-noon)/(dl/2)*Math.PI/2;
+    return Math.max(0,+(Math.cos(ang)*peakW*cf*(.92+Math.random()*.08)).toFixed(1));
+  });
+  const daily=hourly.reduce((a,b)=>a+b,0).toFixed(1);
+  const peakV=Math.max(...hourly).toFixed(1), peakH=hourly.indexOf(Math.max(...hourly));
+  const addr=curLoc?curLoc.addr:'대전광역시 동구 중앙로 210';
+  $('sol-summary').textContent=`📍 ${addr} | ${$('s-date').value} | ${$('s-algo').value}`;
+  $('r-daily').textContent=daily+' kWh';
+  $('r-peak').textContent=peakV+' kW';
+  $('r-sun').textContent=(+daily/cap).toFixed(2)+' h';
+  $('r-pr').textContent=(PR*100).toFixed(1)+'%';
+  $('fc-meta').textContent=`PR=${PR.toFixed(3)} · 피크 ${peakV}kW @ ${peakH}:00 · GHI ${$('s-ghi').value}MJ/m²`;
+  Object.values(solCharts).forEach(c=>c&&c.destroy&&c.destroy()); solCharts={};
+  const bu=hourly.map(v=>+(v*1.09).toFixed(1)), bl=hourly.map(v=>+(v*.91).toFixed(1));
+  solCharts.f=new Chart($('ch-forecast'),{type:'line',data:{labels:H24,datasets:[
+    {data:bu,borderColor:'rgba(180,83,9,.15)',backgroundColor:'rgba(180,83,9,.05)',fill:'+1',pointRadius:0,tension:.4,borderWidth:0},
+    {data:bl,borderColor:'rgba(180,83,9,.15)',fill:false,pointRadius:0,tension:.4,borderWidth:0},
+    {label:'예측',data:hourly,borderColor:'#D97706',backgroundColor:'rgba(217,119,6,.1)',fill:false,tension:.4,pointRadius:2,borderWidth:2}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9},maxTicksLimit:8},grid:{color:GC}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+  const b=(+daily*.52).toFixed(0), ev=(+daily*.31).toFixed(0), sp=(+daily*.17).toFixed(0);
+  solCharts.p=new Chart($('ch-pie'),{type:'doughnut',data:{labels:[`주차장 부하 (${b}kWh)`,`EV 충전 (${ev}kWh)`,`잉여/계통 (${sp}kWh)`],datasets:[{data:[+b,+ev,+sp],backgroundColor:['#0F62FE','#16803C','#D97706'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:DK,font:{size:11},padding:10}}},cutout:'60%'}});
+  const tb=$('ops-tbl'); tb.innerHTML='';
+  [[5,8,'일출 준비','제한'],[8,11,'PV 우선','가능'],[11,15,'최대 발전','최우선'],[15,18,'PV 우선','가능'],[18,21,'계통 보조','제한'],[21,24,'야간 절전','불가']].forEach(([s,e,m,ev])=>{
+    const avg=(hourly.slice(s,e).reduce((a,b)=>a+b,0)/Math.max(1,e-s)).toFixed(1);
+    const cls=ev==='최우선'?'bg-green':ev==='가능'?'bg-blue':'bg-yellow';
+    const r=document.createElement('tr');
+    r.innerHTML=`<td>${s}:00~${e}:00</td><td>${avg}</td><td>${m}</td><td><span class="badge ${cls}">${ev}</span></td>`;
+    tb.appendChild(r);
+  });
+  setSteps(3);
+  showToast('태양광 예측 완료 ✓ — '+addr);
+}
+
+/* ═══════════ ECONOMICS ═══════════ */
+let ecCharts={};
+const gv = id => +$(id).value;
+
+async function runEcon() {
+  stab('ec-out', document.querySelector('[onclick*="ec-out"]'));
+  const lo=$('ec-loader'), rc=$('ec-result');
+  lo.classList.add('show'); rc.style.display='none';
+  let p=0;
+  const prog=$('ec-prog');
+  await new Promise(resolve=>{const iv=setInterval(()=>{p=Math.min(p+Math.random()*15,100);prog.style.width=p+'%';if(p>=100){clearInterval(iv);setTimeout(resolve,300);}},200);});
+  lo.classList.remove('show'); rc.style.display='block';
+  buildEcon(); buildScenarios();
+  showToast('경제성 분석 완료 ✓');
+}
+
+function buildEcon() {
+  const ti = gv('e-sc')*50 + gv('e-ec')*gv('e-en') + gv('e-mc') + gv('e-cc') + gv('e-xc');
+  const ni = ti - gv('e-sb');
+  const buy=gv('e-br'), evP=gv('e-er'), er=gv('e-ri')/100, deg=gv('e-dg')/100;
+  const maint=gv('e-mt'), evu=gv('e-eu'), yrs=gv('e-yr'), disc=gv('e-dr')/100;
+  const rW=+$('e-rw').value, rP=gv('e-rp');
+  const ag=26000, aev=evu*2*50*.6*365;
+  let npv=-ni, cArr=[-ni/1000], tv=0, tc=ni, pb=null, cum=-ni;
+  const tb=document.querySelector('#cf-tbl tbody'); tb.innerHTML='';
+  for(let y=1;y<=yrs;y++){
+    const gen=ag*Math.pow(1-deg,y-1);
+    const eS=gen*.52*buy*Math.pow(1+er,y-1);
+    const eV=aev*evP/1000;
+    const rC=gen/1000*rW*rP/1000;
+    const ncf=eS+eV+rC-maint;
+    npv+=ncf/Math.pow(1+disc,y);
+    cum+=ncf; cArr.push(+(cum/1000).toFixed(0));
+    tv+=ncf; tc+=maint;
+    if(!pb&&cum>=0)pb=y;
+    if(y<=10){
+      const cumCol=cum>=0?'var(--c-green)':'var(--c-red)';
+      const r=document.createElement('tr');
+      r.innerHTML=`<td>${y}년</td><td class="tbl-num">${Math.round(eS).toLocaleString()}</td><td class="tbl-num">${Math.round(eV).toLocaleString()}</td><td class="tbl-num">${Math.round(rC).toLocaleString()}</td><td class="tbl-num">${Math.round(maint).toLocaleString()}</td><td class="tbl-num" style="color:var(--c-green);font-weight:700">${Math.round(ncf).toLocaleString()}</td><td class="tbl-num" style="color:${cumCol};font-weight:700">${Math.round(cum/1000).toLocaleString()}M</td>`;
+      tb.appendChild(r);
+    }
+  }
+  const tgy=ag*(1-(1-deg)**yrs)/deg, lcoe=(tc/tgy).toFixed(0);
+  const irr=calcIRR(ni,tv/yrs,yrs);
+  $('r-npv').textContent=(npv/1000).toFixed(1)+'백만원';
+  $('r-irr').textContent=irr.toFixed(1)+'%';
+  $('r-pb').textContent=pb?pb+'년':'20년+';
+  $('r-bcr').textContent=(tv/Math.max(1,tc)).toFixed(2);
+  $('r-rev').textContent=(tv/1000000).toFixed(1)+'억원';
+  $('r-cost').textContent=(tc/1000).toFixed(1)+'백만원';
+  $('r-lcoe').textContent=lcoe+'원/kWh';
+  Object.values(ecCharts).forEach(c=>c&&c.destroy&&c.destroy()); ecCharts={};
+  const col = cArr[cArr.length-1]>0?'#16803C':'#DC2626';
+  const bgCol = cArr[cArr.length-1]>0?'rgba(22,128,60,.1)':'rgba(220,38,38,.08)';
+  ecCharts.cf=new Chart($('ch-cf'),{type:'line',data:{labels:Array.from({length:yrs+1},(_,i)=>i+'년'),datasets:[{data:cArr,borderColor:col,backgroundColor:bgCol,fill:true,tension:.4,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9},maxTicksLimit:6},grid:{display:false}},y:{ticks:{color:TC,font:{size:9},callback:v=>v+'M'},grid:{color:GC}}}}});
+  const eS2=ag*.52*buy/1000, eV2=aev*evP/1000000*1000, rC2=ag/1000*+$('e-rw').value*gv('e-rp')/1000;
+  ecCharts.rev=new Chart($('ch-rev'),{type:'doughnut',data:{labels:[`전력절감(${Math.round(eS2/1000)}M)`,`EV수익(${Math.round(eV2/1000)}M)`,`REC(${Math.round(rC2/1000)}M)`],datasets:[{data:[Math.round(eS2),Math.round(eV2),Math.round(rC2)],backgroundColor:['#0F62FE','#16803C','#D97706'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:DK,font:{size:10},padding:8}}},cutout:'55%'}});
+}
+
+function calcIRR(inv, aCF, yrs) {
+  let r=.1;
+  for(let i=0;i<80;i++){
+    let npv=-inv;
+    for(let y=1;y<=yrs;y++) npv+=aCF/Math.pow(1+r,y);
+    if(Math.abs(npv)<1)break;
+    r+=npv>0?.001:-.001;
+    r=Math.max(-0.99,Math.min(r,10));
+  }
+  return r*100;
+}
+
+function buildScenarios() {
+  const defs=[
+    {name:'기본안 (현재)',ev:2,rec:1.5,sub:25000,col:'#0F62FE',rec2:false},
+    {name:'확장안 (EV 4기)',ev:4,rec:1.5,sub:40000,col:'#16803C',rec2:true},
+    {name:'최소안 (EV 1기)',ev:1,rec:1.2,sub:15000,col:'#D97706',rec2:false},
+  ];
+  const con=$('sc-cards'); con.innerHTML='';
+  const nvs=[];
+  defs.forEach(s=>{
+    const inv=50*1200+s.ev*28000+35000+15000+8000-s.sub;
+    const ar=(26000*.52*120+s.ev*50*.6*365*350+26000/1000*s.rec*45000)/1000;
+    const pb=Math.ceil(inv/ar), nv=(ar*20*.7-inv/1000).toFixed(0);
+    nvs.push(+nv);
+    const el=document.createElement('div');
+    el.className='sc-card'+(s.rec2?' rec':'');
+    el.innerHTML=`${s.rec2?'<div class="sc-rec-tag">추천</div>':''}<div class="sc-name" style="color:${s.col}">${s.name}</div><div class="sc-row"><span class="sc-k">총 투자비</span><span class="sc-v">${(inv/1000).toFixed(0)}백만원</span></div><div class="sc-row"><span class="sc-k">연간 수익</span><span class="sc-v">${ar.toFixed(0)}천원</span></div><div class="sc-row"><span class="sc-k">단순 회수기간</span><span class="sc-v">${pb}년</span></div><div class="sc-row"><span class="sc-k">NPV(20년)</span><span class="sc-v" style="color:var(--c-green)">${nv}백만원</span></div>`;
+    con.appendChild(el);
+  });
+  if(ecCharts.sc)ecCharts.sc.destroy();
+  ecCharts.sc=new Chart($('ch-sc'),{type:'bar',data:{labels:defs.map(s=>s.name),datasets:[{data:nvs,backgroundColor:defs.map(s=>s.col),borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:10}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+}
+
+function resetEcon() {
+  [['e-sc',1200],['e-ec',28000],['e-en',2],['e-mc',35000],['e-cc',15000],['e-xc',8000],
+   ['e-br',120],['e-er',350],['e-ri',3.5],['e-dg',.5],['e-mt',3500],['e-eu',8],
+   ['e-yr',20],['e-dr',4.5],['e-sb',25000],['e-rp',45000],['e-tx',10]].forEach(([id,v])=>$(id).value=v);
+}
+
+/* ═══════════ BASE CHARTS ═══════════ */
+new Chart($('ch-overview'),{type:'line',data:{labels:H24,datasets:[
+  {data:genBase,borderColor:'#D97706',backgroundColor:'rgba(217,119,6,.1)',fill:true,tension:.4,pointRadius:0,borderWidth:2},
+  {data:[12,11,10,10,9,10,14,18,24,30,36,38,40,42,38,35,30,25,22,20,18,16,14,13],borderColor:'#0F62FE',backgroundColor:'transparent',tension:.4,pointRadius:0,borderWidth:1.5,borderDash:[4,2]}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9},maxTicksLimit:8},grid:{color:GC}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+
+new Chart($('ch-monthly'),{type:'bar',data:{labels:MONTHS,datasets:[{data:[1820,2100,2780,3200,3550,3410],backgroundColor:'rgba(217,119,6,.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+
+new Chart($('ch-vs'),{type:'line',data:{labels:['6/9','6/10','6/11','6/12','6/13','6/14','6/15'],datasets:[{data:[148,162,155,170,160,158,172],borderColor:'#0F62FE',tension:.4,pointRadius:3,borderWidth:1.5,borderDash:[4,2]},{data:[152,158,161,168,155,163,null],borderColor:'#16803C',tension:.4,pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+
+new Chart($('ch-ev'),{type:'bar',data:{labels:H24,datasets:[
+  {data:[0,0,0,0,0,0,0,5,15,32,45,50,48,44,40,35,30,25,20,15,10,5,0,0],backgroundColor:'rgba(22,128,60,.6)',borderRadius:2},
+  {data:genBase,type:'line',borderColor:'#D97706',backgroundColor:'transparent',tension:.4,pointRadius:0,borderWidth:1.5,borderDash:[4,2]}
+]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9},maxTicksLimit:8},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+
+/* ═══════════ SOLAR MODEL CHART ═══════════ */
+let solModelDone=false;
+function initSolarModelChart(){
+  if(solModelDone)return; solModelDone=true;
+  new Chart($('ch-monthly-char'),{type:'bar',data:{labels:['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],datasets:[
+    {data:[4.2,5.1,5.9,6.4,6.8,6.2,5.1,5.6,5.4,5.8,4.6,3.9],backgroundColor:'rgba(217,119,6,.7)',borderRadius:3,yAxisID:'y'},
+    {data:[1680,2040,2360,2560,2720,2480,2040,2240,2160,2320,1840,1560],backgroundColor:'rgba(22,128,60,.5)',borderRadius:3,yAxisID:'y1'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC},title:{display:true,text:'일조(h)',color:TC,font:{size:9}}},y1:{position:'right',ticks:{color:TC,font:{size:9}},grid:{display:false},title:{display:true,text:'발전(kWh)',color:TC,font:{size:9}}}}}});
+}
+
+/* ═══════════ REPORT ═══════════ */
+const RPT={
+  1:{gen:1820,cons:4200,trade:320,self:32,co2:815,evN:182,evKwh:2184,evRev:764400,pe:3,ps:1240},
+  2:{gen:2100,cons:4050,trade:380,self:37,co2:940,evN:210,evKwh:2520,evRev:882000,pe:4,ps:1540},
+  3:{gen:2780,cons:4380,trade:490,self:48,co2:1245,evN:248,evKwh:2976,evRev:1041600,pe:5,ps:1980},
+  4:{gen:3200,cons:4600,trade:560,self:55,co2:1433,evN:270,evKwh:3240,evRev:1134000,pe:6,ps:2280},
+  5:{gen:3550,cons:4820,trade:620,self:60,co2:1590,evN:295,evKwh:3540,evRev:1239000,pe:7,ps:2590},
+  6:{gen:3412,cons:4710,trade:598,self:58,co2:1528,evN:284,evKwh:3408,evRev:1192800,pe:8,ps:2480},
+};
+let rptCharts={}, rptDone=false;
+
+function initReport(){ if(rptDone)return; rptDone=true; renderReport(); }
+
+function renderReport(){
+  const mo=+$('rpt-mo').value, d=RPT[mo], days=DAYS_IN_MO[mo-1];
+  $('rpt-period').textContent=`2025년 ${mo}월 1일 ~ ${mo}월 ${days}일 (${days}일)`;
+  $('rpt-gen').textContent=new Date().toLocaleString('ko-KR');
+
+  // KPIs
+  $('rpt-kpis').innerHTML=`
+    <div class="rpt-kpi g"><div class="rpt-kpi-val">${d.gen.toLocaleString()}</div><div class="rpt-kpi-lbl">태양광 생산량 (kWh)</div><div class="rpt-kpi-sub">일평균 ${(d.gen/days).toFixed(0)} kWh</div></div>
+    <div class="rpt-kpi b"><div class="rpt-kpi-val">${d.cons.toLocaleString()}</div><div class="rpt-kpi-lbl">총 소비량 (kWh)</div><div class="rpt-kpi-sub">전력비 ${(d.cons*120/1000).toFixed(0)}천원</div></div>
+    <div class="rpt-kpi y"><div class="rpt-kpi-val">${d.trade.toLocaleString()}</div><div class="rpt-kpi-lbl">계통 거래량 (kWh)</div><div class="rpt-kpi-sub">역송 ${Math.round(d.trade*.3)} / 수전 ${Math.round(d.trade*.7)}</div></div>
+    <div class="rpt-kpi o"><div class="rpt-kpi-val">${d.self}%</div><div class="rpt-kpi-lbl">에너지 자립률</div><div class="rpt-kpi-sub">목표 60% ${d.self>=60?'✓달성':'미달'}</div></div>
+    <div class="rpt-kpi p"><div class="rpt-kpi-val">${d.co2.toLocaleString()}</div><div class="rpt-kpi-lbl">CO₂ 저감 (kg)</div><div class="rpt-kpi-sub">나무 ${Math.round(d.co2/22)}그루 효과</div></div>`;
+
+  // Flow
+  const bldg=Math.round(d.gen*.52), ev=Math.round(d.gen*.31), surp=Math.round(d.gen*.17);
+  $('rpt-flow').innerHTML=`
+    <div class="flow-li"><span>☀ 태양광 생산</span><strong style="color:var(--c-yellow)">${d.gen.toLocaleString()} kWh</strong></div>
+    <div class="flow-li"><span>🏢 주차장 부하 공급</span><span style="color:var(--c-primary)">${bldg.toLocaleString()} kWh (${Math.round(bldg/d.gen*100)}%)</span></div>
+    <div class="flow-li"><span>🚗 EV 충전 공급</span><span style="color:var(--c-green)">${ev.toLocaleString()} kWh (${Math.round(ev/d.gen*100)}%)</span></div>
+    <div class="flow-li"><span>⚡ 계통 역송(잉여)</span><span style="color:var(--c-text2)">${surp.toLocaleString()} kWh</span></div>
+    <div class="flow-li"><span>🔌 계통 수전</span><span style="color:var(--c-text2)">${(d.cons-d.gen+surp).toLocaleString()} kWh</span></div>
+    <div class="flow-li"><span style="color:var(--c-text3);font-size:10px">전력 절감액</span><strong style="color:var(--c-green)">${(d.gen*.52*120/1000).toFixed(0)}천원</strong></div>`;
+
+  // Events
+  const etypes=[{t:'피크 수요 대체',c:'et-peak'},{t:'부하 제어(DR)',c:'et-dr'},{t:'잉여 계통 공급',c:'et-solar'},{t:'스마트 충전 전환',c:'et-ev'}];
+  let evH='';
+  for(let i=0;i<d.pe;i++){
+    const day=3+Math.floor(i*(days/d.pe)), hr=10+Math.floor(Math.random()*6);
+    const et=etypes[i%4], pk=(52+Math.random()*8).toFixed(1), alt=(8+Math.random()*12).toFixed(1);
+    evH+=`<tr><td>6/${day}</td><td>${hr}:00~${hr+2}:00</td><td><span class="event-tag ${et.c}">${et.t}</span></td><td class="tbl-num">${pk} kW</td><td class="tbl-num">${alt} kWh</td><td class="tbl-num">${Math.round(alt*120).toLocaleString()}원</td><td><span class="badge bg-green">완료</span></td></tr>`;
+  }
+  $('rpt-events').innerHTML=evH;
+
+  // Peak stats
+  $('rpt-peak-stats').innerHTML=`
+    <div class="peak-stat"><span class="ps-k">총 이벤트</span><span class="ps-v" style="color:var(--c-orange)">${d.pe}회</span></div>
+    <div class="peak-stat"><span class="ps-k">피크 대체량</span><span class="ps-v" style="color:var(--c-yellow)">${d.ps} kWh</span></div>
+    <div class="peak-stat"><span class="ps-k">DR 절감액</span><span class="ps-v" style="color:var(--c-green)">${(d.ps*120/1000).toFixed(0)}천원</span></div>
+    <div class="peak-stat"><span class="ps-k">피크 초과</span><span class="ps-v" style="color:var(--c-green)">0건</span></div>`;
+
+  // EV KPIs
+  $('rpt-ev-kpis').innerHTML=`
+    <div class="rpt-kpi g"><div class="rpt-kpi-val">${d.evN}</div><div class="rpt-kpi-lbl">총 충전 횟수</div></div>
+    <div class="rpt-kpi b"><div class="rpt-kpi-val">${d.evKwh.toLocaleString()}</div><div class="rpt-kpi-lbl">총 충전량 (kWh)</div></div>
+    <div class="rpt-kpi y"><div class="rpt-kpi-val">${(d.evRev/10000).toFixed(0)}만원</div><div class="rpt-kpi-lbl">충전 수익</div></div>`;
+
+  let evR='';
+  for(let i=1;i<=5;i++){
+    const day=i*Math.floor(days/5), cnt=8+Math.round(Math.random()*5);
+    const kwh=(cnt*12+Math.random()*20).toFixed(0), sol=(65+Math.random()*20).toFixed(0);
+    const pk=Math.random()>.4?'<span class="badge bg-green">회피</span>':'<span class="badge bg-yellow">부분</span>';
+    evR+=`<tr><td>6/${day}</td><td class="tbl-num">${cnt}</td><td class="tbl-num">${kwh}</td><td class="tbl-num">${sol}%</td><td>${pk}</td><td class="tbl-num">${(kwh*350).toLocaleString()}</td></tr>`;
+  }
+  $('rpt-ev-rows').innerHTML=evR;
+  $('rpt-ev-note').innerHTML=`<strong style="color:var(--c-green)">스마트 충전:</strong> 태양광 피크(10~15시) EV 우선 배정.<br><strong style="color:var(--c-yellow)">피크 회피:</strong> 계통 초과 예상 시 출력 자동 제한(30%).<br><strong style="color:var(--c-primary)">야간 완속:</strong> 22시 이후 잔여 전력 자동 배분.`;
+  
+  // Opinion
+  $('rpt-opinion').innerHTML=`
+    <div class="opinion-item"><span class="oi-icon">✅</span><span><strong style="color:var(--c-green)">태양광 운영:</strong> ${mo}월 발전량 ${d.gen.toLocaleString()} kWh 달성. 에너지 자립률 ${d.self}%로 ${d.self>=55?'목표 달성':'향상 필요'}. 시스템 PR 정상.</span></div>
+    <div class="opinion-item"><span class="oi-icon">⚡</span><span><strong style="color:var(--c-yellow)">피크 관리:</strong> ${d.pe}건 피크 이벤트 전체 PV 공급으로 대체. 계통 초과 0건. DR 절감액 ${(d.ps*120/1000).toFixed(0)}천원.</span></div>
+    <div class="opinion-item"><span class="oi-icon">🚗</span><span><strong style="color:var(--c-primary)">EV 충전:</strong> 스마트 스케줄링으로 PV 잉여 전력 EV 우선 공급. 충전 수익 ${(d.evRev/10000).toFixed(0)}만원.</span></div>
+    <div class="opinion-item"><span class="oi-icon">📈</span><span><strong style="color:var(--c-purple)">다음달 권고:</strong> 여름철 냉방 부하 증가 예상 → EMS 피크 임계값 55kW 하향 및 EV 야간 분산 충전 강화 권장.</span></div>`;
+
+  buildReportCharts(mo, d, days);
+}
+
+function buildReportCharts(mo, d, days) {
+  Object.values(rptCharts).forEach(c=>c&&c.destroy&&c.destroy()); rptCharts={};
+  const dlbls=Array.from({length:10},(_,i)=>Math.round(i*days/9+1)+'일');
+  rptCharts.daily=new Chart($('ch-rpt-daily'),{type:'bar',data:{labels:dlbls,datasets:[
+    {label:'생산',data:Array.from({length:10},()=>+(d.gen/10*(.85+Math.random()*.3)).toFixed(0)),backgroundColor:'rgba(217,119,6,.7)',borderRadius:3},
+    {label:'소비',data:Array.from({length:10},()=>+(d.cons/10*(.9+Math.random()*.2)).toFixed(0)),backgroundColor:'rgba(15,98,254,.5)',borderRadius:3},
+    {label:'거래',data:Array.from({length:10},()=>+(d.trade/10*(.7+Math.random()*.6)).toFixed(0)),type:'line',borderColor:'#16803C',backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:DK,font:{size:10},padding:8,boxWidth:8}}},scales:{x:{ticks:{color:TC,font:{size:9}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+
+  rptCharts.peak=new Chart($('ch-rpt-peak'),{type:'bar',data:{labels:['1주','2주','3주','4주'],datasets:[{data:[Math.ceil(d.pe/4),Math.ceil(d.pe/4),Math.floor(d.pe/4),Math.floor(d.pe/4)],backgroundColor:'rgba(194,65,12,.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9},stepSize:1},grid:{color:GC}}}}});
+
+  const solar=[0,0,0,0,0,0,1,6,14,22,30,36,38,34,28,21,13,6,1,0,0,0,0,0];
+  const evSch=[0,0,0,0,0,0,0,3,8,18,32,40,38,34,28,20,14,10,6,3,0,0,0,0];
+  rptCharts.ev=new Chart($('ch-rpt-ev'),{type:'bar',data:{labels:H24,datasets:[
+    {label:'EV 충전(kW)',data:evSch,backgroundColor:'rgba(22,128,60,.6)',borderRadius:2,yAxisID:'y'},
+    {label:'태양광(kW)',data:solar,type:'line',borderColor:'#D97706',backgroundColor:'rgba(217,119,6,.07)',fill:true,tension:.4,pointRadius:0,borderWidth:1.5,yAxisID:'y'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:DK,font:{size:9},padding:6,boxWidth:8}}},scales:{x:{ticks:{color:TC,font:{size:8},maxTicksLimit:8},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+
+  rptCharts.mon=new Chart($('ch-rpt-mon'),{type:'bar',data:{labels:MONTHS,datasets:[{data:Object.values(RPT).map(v=>v.gen),backgroundColor:MONTHS.map((_,i)=>i===mo-1?'rgba(217,119,6,.95)':'rgba(217,119,6,.35)'),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}}}}});
+
+  rptCharts.self=new Chart($('ch-rpt-self'),{type:'line',data:{labels:MONTHS,datasets:[{data:Object.values(RPT).map(v=>v.self),borderColor:'#7C3AED',backgroundColor:'rgba(124,58,237,.1)',fill:true,tension:.4,pointRadius:4,borderWidth:2},{data:[60,60,60,60,60,60],borderColor:'rgba(22,128,60,.4)',borderDash:[4,3],pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9},callback:v=>v+'%'},grid:{color:GC},max:80}}}});
+
+  let cum=0;
+  rptCharts.co2=new Chart($('ch-rpt-co2'),{type:'bar',data:{labels:MONTHS,datasets:[
+    {data:Object.values(RPT).map(v=>v.co2),backgroundColor:'rgba(22,128,60,.5)',borderRadius:3,yAxisID:'y'},
+    {data:Object.values(RPT).map(v=>{cum+=v.co2;return cum;}),type:'line',borderColor:'#16803C',backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2,yAxisID:'y1'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:TC,font:{size:9}},grid:{display:false}},y:{ticks:{color:TC,font:{size:9}},grid:{color:GC}},y1:{position:'right',ticks:{color:TC,font:{size:9}},grid:{display:false}}}}});
+}
+</script>
+</body>
+</html>
